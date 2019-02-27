@@ -8,10 +8,15 @@ class HelloWorld extends Component {
     super(props);
     this.state = { greeting: 'Hello' };
     this.toSpanish = this.toSpanish.bind(this);
+    this.removeGreeting = this.removeGreeting.bind(this);
+  }
+
+  removeGreeting() {
+    this.props.removeGreeting(this.props.name);
   }
 
   toSpanish() {
-    this.setState({ greeting: 'Hola'});
+    this.setState({ greeting: 'Hola' });
   }
 
   render() {
@@ -19,6 +24,8 @@ class HelloWorld extends Component {
       <div className="HelloWorld" > {this.state.greeting} {this.props.name}!
       <br />
         <button onClick={this.toSpanish}>Change to Spanish</button>
+        <br />
+        <button onClick={this.removeGreeting}>Remove</button>
       </div>
     );
   }
