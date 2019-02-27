@@ -1,0 +1,10 @@
+{
+  "name": "sensitive-artifact-catalog",
+  "version": "1.0.0",
+  "description": "CRUD functions for managing a catalog of sensitive artifacts",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "uuid": "^2.0.3"
+  }
+}
