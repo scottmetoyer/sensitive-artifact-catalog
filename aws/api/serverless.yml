@@ -43,10 +43,18 @@ functions:
           cors: true
           authorizer: aws_iam
   get-note:
-      handler: notes/get.main
-      events:
-        - http:
-          path: notes/{id}
+    handler: notes/get.main
+    events:
+      - http:
+        path: notes/{id}
+        method: get
+        cors: true
+        authorizer: aws-iam
+  list-notes:
+    handler: notes/list.main
+    events:
+      - http:
+          path: notes
           method: get
           cors: true
-          authorizer: aws-iam
+          authorizer: aws_iam
