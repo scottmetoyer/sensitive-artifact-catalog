@@ -1,93 +1,52 @@
 service: sensitive-artifact-services
 
+# Use the serverless-webpack plugin to transpile ES6
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
 custom:
-  stage: ${opt:stage, self:provider.stage}
+  # stage: ${opt:stage, self:provider.stage}
   profile:
-    prod: ucr-production
     dev: default
+    prod: ucr-production
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
 
 provider:
   name: aws
   runtime: nodejs8.10
-  region: us-west-1
-  profile: ${self:custom.profile.${self:custom.stage}}
-
-  environment:
-    ARTIFACTS_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  region: us-west-2
+  stage: prod
+  # profile: ${self:custom.profile.${self:custom.stage}}
 
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - dynamodb:DescribeTable
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.ARTIFACTS_TABLE}"
+      Resource: "arn:aws:dynamodb:us-west-2:*:*"
 
 functions:
-  auth:
-    handler: auth.handler
-    cors: true
-
-  create:
-    handler: artifacts/create.create
+  create-note:
+    handler: notes/create.main
     events:
       - http:
-          path: artifacts
+          path: notes
           method: post
           cors: true
-
-  list:
-    handler: artifacts/list.list
-    events:
-      - http:
-          path: artifacts
+          authorizer: aws_iam
+  get-note:
+      handler: notes/get.main
+      events:
+        - http:
+          path: notes/{id}
           method: get
           cors: true
-
-  get:
-    handler: artifacts/get.get
-    events:
-      - http:
-          path: artifacts/{id}
-          method: get
-          cors: true
-
-  update:
-    handler: artifacts/update.update
-    events:
-      - http:
-          path: artifacts/{id}
-          method: put
-          cors: true
-
-  delete:
-    handler: artifacts/delete.delete
-    events:
-      - http:
-          path: artifacts/{id}
-          method: delete
-          cors: true
-
-resources:
-  Resources:
-    AuthFailureGatewayResponse:
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties:
-        ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-        ResponseType: DEFAULT_4XX
-        RestApiId:
-          Ref: 'ApiGatewayRestApi'
-    ServerErrorGatewayResponse:
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties:
-        ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-        ResponseType: DEFAULT_5XX
-        RestApiId:
-          Ref: 'ApiGatewayRestApi'
+          authorizer: aws-iam

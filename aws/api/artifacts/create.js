@@ -1,9 +1,31 @@
-'use strict';
+import uuid from "uuid";
+import AWS from "aws-sdk";
+
+const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
+export function main(event, context, callback) {
+  const data = JSON.parse(event.body);
+
+  const params = {
+    TableName: "sensitive-artifact-notes",
+    Item: {
+      userId: event.requestContext.identity.cognitoIdentityId,
+      noteId: uuid.v1(),
+      content: data.content,
+      attachment: data.attachment,
+      created: Date.now()
+    }
+  }
+}
+
+
+
+/* */
 
 const uuid = require('uuid');
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
 
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();

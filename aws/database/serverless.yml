@@ -8,7 +8,7 @@ custom:
 
 provider:
   name: aws
-  region: us-west-1
+  region: us-west-2
   profile: ${self:custom.profile.${self:custom.stage}}
 
   environment:
