@@ -6,7 +6,7 @@ plugins:
   - serverless-offline
 
 custom:
-  # stage: ${opt:stage, self:provider.stage}
+  stage: ${opt:stage, self:provider.stage}
   profile:
     dev: default
     prod: ucr-production
@@ -19,7 +19,7 @@ provider:
   runtime: nodejs8.10
   region: us-west-2
   stage: prod
-  # profile: ${self:custom.profile.${self:custom.stage}}
+  profile: ${self:custom.profile.${self:custom.stage}}
 
   iamRoleStatements:
     - Effect: Allow
@@ -42,14 +42,16 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+
   get-note:
     handler: notes/get.main
     events:
       - http:
-        path: notes/{id}
-        method: get
-        cors: true
-        authorizer: aws-iam
+          path: notes/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+
   list-notes:
     handler: notes/list.main
     events:
@@ -58,6 +60,7 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
+
   update-note:
     handler: notes/update.main
     events:
@@ -66,6 +69,7 @@ functions:
           method: put
           cors: true
           authorizer: aws_iam
+
   delete-note:
     handler: notes/delete.main
     events:
